@@ -1,0 +1,17 @@
+# Build
+bin/
+obj/
+# VS/JetBrains
+.vs/
+.idea/
+*.user
+*.suo
+# Logs
+*.log
+# Distribuição
+dist/
+publish/
+# Dependências front
+node_modules/
+# Secrets locais
+appsettings.Development.json

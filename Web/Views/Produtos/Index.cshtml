@@ -1,0 +1,110 @@
+﻿@model List<Domain.Produto>
+
+@{
+    ViewData["Title"] = "Produtos";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Gestão de Produtos</h2>
+        <form method="post" asp-controller="Login" asp-action="Logout">
+            <button type="submit" class="btn btn-outline-secondary">Sair</button>
+        </form>
+    </div>
+
+    <!-- Formulário de cadastro -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title">Novo Produto</h5>
+            <form method="post" asp-action="Create" class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="@(new Domain.Produto().Nome)" class="form-label">Nome</label>
+                    <input asp-for="@(new Domain.Produto().Nome)" class="form-control" placeholder="Nome do produto" required />
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="@(new Domain.Produto().Preco)" class="form-label">Preço</label>
+                    <input asp-for="@(new Domain.Produto().Preco)" type="number" step="0.01" class="form-control" placeholder="0,00" required />
+                </div>
+                <div class="col-md-3 d-flex align-items-center">
+                    <div class="form-check mt-4">
+                        <input asp-for="@(new Domain.Produto().Status)" class="form-check-input" />
+                        <label asp-for="@(new Domain.Produto().Status)" class="form-check-label">Ativo</label>
+                    </div>
+                </div>
+
+                <div class="col-12 text-end">
+                    <button type="submit" class="btn btn-primary">Cadastrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabela de produtos -->
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Id</th>
+                <th>Nome</th>
+                <th>Preço</th>
+                <th>Status</th>
+                <th>Cadastrado por</th>
+                <th>Alterado por</th>
+                <th class="text-center">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td>@p.Id</td>
+
+                    @if (ViewBag.EditId == p.Id)
+                    {
+                        <!-- Linha em modo edição -->
+                        <form method="post" asp-action="Edit" class="d-inline w-100">
+                        <td>
+                            <input type="text" name="Nome" value="@p.Nome" class="form-control form-control-sm" />
+                        </td>
+                        <td>
+                            <input type="number" step="0.01" name="Preco" value="@p.Preco" class="form-control form-control-sm" />
+                        </td>
+                        <td>
+                            <!-- garante envio sempre -->
+                            <input type="hidden" name="Status" value="false" />
+                            <input type="checkbox" name="Status" value="true" class="form-check-input" @(p.Status ? "checked" : "") />
+                            <label class="form-check-label">Ativo</label>
+                        </td>
+                        <td>@p.UsuarioCadastro?.Nome</td>
+                        <td>@p.UsuarioUpdate?.Nome</td>
+                        <td class="text-center">
+                            <input type="hidden" name="Id" value="@p.Id" />
+                            <input type="hidden" name="IdUsuarioCadastro" value="@p.IdUsuarioCadastro" />
+                            <input type="hidden" name="IdUsuarioUpdate" value="@p.IdUsuarioUpdate" />
+                            <button type="submit" class="btn btn-sm btn-success">Salvar</button>
+                            <a asp-action="Index" class="btn btn-sm btn-secondary">Cancelar</a>
+                        </td>
+                        </form>
+                    }
+                    else
+                    {
+                        <!-- Linha em modo leitura -->
+                        <td>@p.Nome</td>
+                        <td>R$ @p.Preco.ToString("F2")</td>
+                        <td>@(p.Status ? "Ativo" : "Inativo")</td>
+                        <td>@p.UsuarioCadastro?.Nome</td>
+                        <td>@p.UsuarioUpdate?.Nome</td>
+                        <td class="text-center">
+                            <div class="btn-group" role="group">
+                                <a asp-action="Index" asp-route-editId="@p.Id" class="btn btn-sm btn-warning">Editar</a>
+                                <form method="post" asp-action="Delete" class="d-inline">
+                                    <input type="hidden" name="id" value="@p.Id" />
+                                    <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                                </form>
+                            </div>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
